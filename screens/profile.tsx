@@ -6,11 +6,11 @@
  *
  */
 
+import { BackHandler, ButtonRef, Composition, FocusManager, TextRef } from '@youi/react-native-youi';
 import React from 'react';
-import { Composition, BackHandler, ButtonRef, TextRef, FocusManager } from '@youi/react-native-youi';
-import { Timeline, BackButton } from '../components';
-import { withNavigationFocus, NavigationEventSubscription, NavigationFocusInjectedProps } from 'react-navigation';
 import { NativeEventSubscription } from 'react-native';
+import { NavigationEventSubscription, NavigationFocusInjectedProps, withNavigationFocus } from 'react-navigation';
+import { BackButton, Timeline } from '../components';
 import { Config } from '../config';
 
 type ProfileProps = NavigationFocusInjectedProps;
@@ -45,7 +45,7 @@ class ProfileScreen extends React.Component<ProfileProps, ProfileState> {
   componentWillUnmount() {
     this.focusListener.remove();
     this.blurListener.remove();
-    this.backHandlerListener.remove();
+    BackHandler.removeEventListener("hardwareBackPress", this.navigateBack);
   }
 
   navigateBack = async () => {

@@ -6,14 +6,14 @@
  *
  */
 
+import { BackHandler, ButtonRef, Composition, FocusManager, Input, InputEventObject, TextRef, VideoRef, VideoUriSource, ViewRef } from '@youi/react-native-youi';
 import React from 'react';
-import { Composition, ViewRef, VideoRef, ButtonRef, TextRef, Input, FocusManager, BackHandler, VideoUriSource, InputEventObject } from '@youi/react-native-youi';
-import { View, NativeEventSubscription } from 'react-native';
-import { Timeline, ToggleButton, BackButton } from '../components';
-import { withNavigationFocus, NavigationEventSubscription, NavigationFocusInjectedProps } from 'react-navigation';
+import { NativeEventSubscription, View } from 'react-native';
+import { NavigationEventSubscription, NavigationFocusInjectedProps, withNavigationFocus } from 'react-navigation';
 import { connect } from 'react-redux';
-import { Config } from '../config';
 import { Asset } from '../adapters/asset';
+import { BackButton, Timeline, ToggleButton } from '../components';
+import { Config } from '../config';
 import { AurynAppState } from '../reducers/index';
 
 interface VideoProps extends NavigationFocusInjectedProps {
@@ -112,14 +112,14 @@ class VideoScreen extends React.Component<VideoProps, VideoState> {
     this.focusListener = this.props.navigation.addListener('didFocus', () => {
       this.backHandlerListener = BackHandler.addEventListener('hardwareBackPress', this.navigateBack);
     });
-    this.blurListener = this.props.navigation.addListener('didBlur', () => this.backHandlerListener.remove());
+    this.blurListener = this.props.navigation.addListener('didBlur', () => BackHandler.removeEventListener("hardwareBackPress", this.navigateBack));
     keys.concat(mediaKeys).forEach(key => Input.addEventListener(key, this.registerUserActivity));
   }
 
   componentWillUnmount() {
     this.focusListener.remove();
     this.blurListener.remove();
-    this.backHandlerListener.remove();
+    BackHandler.removeEventListener("hardwareBackPress", this.navigateBack);
     keys.concat(mediaKeys).forEach(key => Input.removeEventListener(key, this.registerUserActivity));
   }
 

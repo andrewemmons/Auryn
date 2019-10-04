@@ -6,25 +6,20 @@
  *
  */
 
+import { BackHandler, ButtonRef, Composition, FocusManager, ScrollRef, ViewRef } from '@youi/react-native-youi';
 import React from 'react';
-import { Composition, ViewRef, ScrollRef, ButtonRef, FocusManager, BackHandler } from '@youi/react-native-youi';
-import { View, NativeEventSubscription } from 'react-native';
-import { Timeline, List } from '../components';
-import {
-  withNavigationFocus,
-  NavigationActions,
-  NavigationEventSubscription,
-  NavigationFocusInjectedProps,
-} from 'react-navigation';
+import { NativeEventSubscription, View } from 'react-native';
+import { NavigationActions, NavigationEventSubscription, NavigationFocusInjectedProps, withNavigationFocus } from 'react-navigation';
 import { connect } from 'react-redux';
+import { getDetailsByIdAndType, prefetchDetails } from '../actions/tmdbActions';
 import { Asset } from '../adapters/asset';
+import { List, Timeline } from '../components';
+import { ListType } from '../components/list';
+import { ListItemFocusEvent, ListItemPressEvent } from '../components/listitem';
+import { NavigationBar } from '../components/navigationBar';
+import { ToggleButton, ToggleButtonPress } from '../components/toggleButton';
 import { Config } from '../config';
 import { AurynAppState } from '../reducers';
-import { ListItemFocusEvent, ListItemPressEvent } from '../components/listitem';
-import { ToggleButtonPress, ToggleButton } from '../components/toggleButton';
-import { ListType } from '../components/list';
-import { prefetchDetails, getDetailsByIdAndType } from '../actions/tmdbActions';
-import { NavigationBar } from '../components/navigationBar';
 
 type LanderDispatchProps = typeof mapDispatchToProps;
 
@@ -84,7 +79,7 @@ class LanderScreen extends React.Component<LanderProps, LanderState> {
         this.inTimeline.current.play();
       }
     });
-    this.blurListener = this.props.navigation.addListener('didBlur', () => this.backHandlerListener.remove());
+    this.blurListener = this.props.navigation.addListener('didBlur', () =>     BackHandler.removeEventListener("hardwareBackPress", this.navigateBack));
   }
 
   navigateBack = () => {
@@ -96,7 +91,8 @@ class LanderScreen extends React.Component<LanderProps, LanderState> {
   componentWillUnmount() {
     this.focusListener.remove();
     this.blurListener.remove();
-    this.backHandlerListener.remove();
+    BackHandler.removeEventListener("hardwareBackPress", this.navigateBack);
+   // this.backHandlerListener.remove();
   }
 
   navigateToScreen = async (screen: string) => {

@@ -6,27 +6,19 @@
  *
  */
 
+import { BackHandler, ButtonRef, Composition, FocusManager, ImageRef, TextRef, ViewRef } from '@youi/react-native-youi';
 import React from 'react';
-import { withNavigationFocus, NavigationActions, NavigationEventSubscription, NavigationFocusInjectedProps } from 'react-navigation';
-import {
-  BackHandler,
-  ButtonRef,
-  Composition,
-  ImageRef,
-  TextRef,
-  ViewRef,
-  FocusManager,
-} from '@youi/react-native-youi';
-import { View, NativeEventSubscription } from 'react-native';
+import { NativeEventSubscription, View } from 'react-native';
+import { NavigationActions, NavigationEventSubscription, NavigationFocusInjectedProps, withNavigationFocus } from 'react-navigation';
 import { connect } from 'react-redux';
-import { Timeline, List, BackButton } from '../components';
+import { getDetailsByIdAndType, prefetchDetails } from '../actions/tmdbActions';
+import { getVideoSourceByYoutubeId } from '../actions/youtubeActions';
 import { Asset, AssetType } from '../adapters/asset';
+import { BackButton, List, Timeline } from '../components';
+import { ListType } from '../components/list';
+import { ListItemFocusEvent, ListItemPressEvent } from '../components/listitem';
 import { Config } from '../config';
 import { AurynAppState } from '../reducers';
-import { ListType } from '../components/list';
-import { prefetchDetails, getDetailsByIdAndType } from '../actions/tmdbActions';
-import { getVideoSourceByYoutubeId } from '../actions/youtubeActions';
-import { ListItemFocusEvent, ListItemPressEvent } from '../components/listitem';
 
 type PdpDispatchProps = typeof mapDispatchToProps;
 
@@ -85,7 +77,7 @@ class PdpScreen extends React.Component<PdpProps> {
       if (this.videoOutTimeline.current) this.videoOutTimeline.current.play();
     });
 
-    this.blurListener = this.props.navigation.addListener('didBlur', () => this.backHandlerListener.remove());
+    this.blurListener = this.props.navigation.addListener('didBlur', () => BackHandler.removeEventListener("hardwareBackPress", this.navigateBack));
 
     if (this.posterButton.current)
       FocusManager.focus(this.posterButton.current);
@@ -94,7 +86,7 @@ class PdpScreen extends React.Component<PdpProps> {
   componentWillUnmount() {
     this.focusListener.remove();
     this.blurListener.remove();
-    this.backHandlerListener.remove();
+    BackHandler.removeEventListener("hardwareBackPress", this.navigateBack);
   }
 
   shouldComponentUpdate(nextProps: PdpProps) {

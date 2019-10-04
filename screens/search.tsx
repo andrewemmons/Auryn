@@ -6,17 +6,17 @@
  *
  */
 
+import { BackHandler, Composition, FocusManager, TextInputRef } from '@youi/react-native-youi';
 import React from 'react';
-import { Composition, BackHandler, TextInputRef, FocusManager } from '@youi/react-native-youi';
-import { Timeline, List, BackButton } from '../components';
-import { NavigationActions, withNavigationFocus, NavigationEventSubscription, NavigationFocusInjectedProps } from 'react-navigation';
-import { connect } from 'react-redux';
-import { Asset, AssetType } from '../adapters/asset';
 import { NativeEventSubscription, View } from 'react-native';
+import { NavigationActions, NavigationEventSubscription, NavigationFocusInjectedProps, withNavigationFocus } from 'react-navigation';
+import { connect } from 'react-redux';
+import { getDetailsByIdAndType, prefetchDetails, search } from '../actions/tmdbActions';
+import { Asset, AssetType } from '../adapters/asset';
+import { BackButton, List, Timeline } from '../components';
+import { ListItemFocusEvent, ListItemPressEvent } from '../components/listitem';
 import { Config } from '../config';
 import { AurynAppState } from '../reducers';
-import { getDetailsByIdAndType, prefetchDetails, search } from '../actions/tmdbActions';
-import { ListItemFocusEvent, ListItemPressEvent } from '../components/listitem';
 
 type SearchDispatchProps = typeof mapDispatchToProps;
 
@@ -39,7 +39,7 @@ class SearchScreen extends React.Component<SearchProps> {
     this.focusListener = this.props.navigation.addListener('didFocus', () => {
       this.backHandlerListener = BackHandler.addEventListener('hardwareBackPress', this.navigateBack);
     });
-    this.blurListener = this.props.navigation.addListener('didBlur', () => this.backHandlerListener.remove());
+    this.blurListener = this.props.navigation.addListener('didBlur', () => BackHandler.removeEventListener("hardwareBackPress", this.navigateBack));
 
     if (this.searchTextInput.current)
       FocusManager.focus(this.searchTextInput.current);
@@ -48,7 +48,7 @@ class SearchScreen extends React.Component<SearchProps> {
   componentWillUnmount() {
     this.focusListener.remove();
     this.blurListener.remove();
-    this.backHandlerListener.remove();
+    BackHandler.removeEventListener("hardwareBackPress", this.navigateBack);
   }
 
   navigateBack = async () => {

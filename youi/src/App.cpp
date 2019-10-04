@@ -7,7 +7,7 @@
  */
 
 #include "App.h"
-#include <appium/YiWebDriverLocator.h>
+// #include <appium/YiWebDriverLocator.h>
 #include <cxxreact/JSBigString.h>
 #include <glog/logging.h>
 
@@ -33,11 +33,11 @@ using namespace yi::react;
 bool App::UserInit()
 {
     // Start the web driver for allowing the use of Appium.
-    CYIWebDriver *pWebDriver = CYIWebDriverLocator::GetWebDriver();
-    if (pWebDriver)
-    {
-        pWebDriver->Start();
-    }
+    //CYIWebDriver *pWebDriver = CYIWebDriverLocator::GetWebDriver();
+    //if (pWebDriver)
+    //{
+    //    pWebDriver->Start();
+    //}
 
 #if !defined(YI_MINI_GLOG)
     // miniglog defines this using a non-const char * causing a compile error and it has no implementation anyway.
